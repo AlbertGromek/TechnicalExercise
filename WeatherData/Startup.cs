@@ -22,10 +22,9 @@ namespace WeatherData
             //services for rate limits (https://github.com/stefanprodan/AspNetCoreRateLimit)
             services.AddOptions();
             services.AddMemoryCache();
-            services.Configure<IpRateLimitOptions>
-            (Configuration.GetSection("IpRateLimit"));
-            services.AddSingleton<IIpPolicyStore,
-            MemoryCacheIpPolicyStore>();
+            services.Configure<ClientRateLimitOptions>
+            (Configuration.GetSection("APIKeyLimit"));
+            services.AddInMemoryRateLimiting();
             services.AddSingleton<IRateLimitCounterStore,
             MemoryCacheRateLimitCounterStore>();
             services.AddSingleton<IRateLimitConfiguration,
@@ -40,7 +39,7 @@ namespace WeatherData
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseIpRateLimiting();
+            app.UseClientRateLimiting();
 
             if (env.IsDevelopment())
             {

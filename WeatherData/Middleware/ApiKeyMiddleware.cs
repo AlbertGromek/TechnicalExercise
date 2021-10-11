@@ -24,7 +24,6 @@ namespace WeatherData
                 await context.Response.WriteAsync("Unauthorized. No API Key provided.");
                 return;
             }
-            var keys = _configuration.GetValue<string>("APIKeys");
             var validApiKeys = _configuration.GetSection("APIKeys").Get<List<string>>();
 
             var match = validApiKeys.FirstOrDefault(validApiKeys => validApiKeys.Contains(extractedApiKey));
