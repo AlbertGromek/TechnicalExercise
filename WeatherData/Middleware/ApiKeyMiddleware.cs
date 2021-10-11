@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Linq;
 
 namespace WeatherData
