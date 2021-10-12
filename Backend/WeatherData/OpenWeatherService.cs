@@ -28,7 +28,6 @@ namespace WeatherData
             var apiKey = _configuration.GetValue<string>("APIKey");
             var url = _configuration.GetValue<string>("WeatherForecastURL");
             var client = _clientFactory.CreateClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
             var query = new Dictionary<string, string>
             {
                 ["appid"] = apiKey,
