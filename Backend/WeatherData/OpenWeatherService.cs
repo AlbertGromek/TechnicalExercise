@@ -28,7 +28,6 @@ namespace WeatherData
             var apiKey = _configuration.GetValue<string>("APIKey");
             var url = _configuration.GetValue<string>("WeatherForecastURL");
             var client = _clientFactory.CreateClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
             var query = new Dictionary<string, string>
             {
                 ["appid"] = apiKey,
@@ -52,7 +51,7 @@ namespace WeatherData
                         PropertyNameCaseInsensitive = true
                     };
                     var stringstuff = await response.Content.ReadAsStringAsync();
-                    var errorObject = JsonSerializer.Deserialize<ErrorObject>(stringstuff, options);
+                    var errorObject = JsonSerializer.Deserialize<WeatherErrorObject>(stringstuff, options);
                     return JsonSerializer.Serialize(errorObject.Message);
                 }
                 else
@@ -61,7 +60,7 @@ namespace WeatherData
                 }
             }
         }
-        private class ErrorObject
+        public class WeatherErrorObject
         {
             public string Cod { get; set; }
             public string Message { get; set; }
