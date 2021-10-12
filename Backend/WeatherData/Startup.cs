@@ -20,8 +20,10 @@ namespace WeatherData
         public void ConfigureServices(IServiceCollection services)
         {
             //Insecure! API intended for demo purposes only :D
-            services.AddCors(opt => {
-                opt.AddPolicy("CorsPolicy", policy => {
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
                     policy
                     .AllowAnyOrigin()
                     .AllowAnyMethod()
@@ -32,18 +34,15 @@ namespace WeatherData
             //services for rate limits (https://github.com/stefanprodan/AspNetCoreRateLimit)
             services.AddOptions();
             services.AddMemoryCache();
-            services.Configure<ClientRateLimitOptions>
-            (Configuration.GetSection("APIKeyLimit"));
+            services.Configure<ClientRateLimitOptions>(Configuration.GetSection("APIKeyLimit"));
             services.AddInMemoryRateLimiting();
-            services.AddSingleton<IRateLimitCounterStore,
-            MemoryCacheRateLimitCounterStore>();
-            services.AddSingleton<IRateLimitConfiguration,
-            RateLimitConfiguration>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
             services.AddHttpContextAccessor();
             services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 
             services.AddSingleton<IWeatherService, OpenWeatherService>();
-            
+
             services.AddControllers();
             services.AddHttpClient();
         }
@@ -51,7 +50,6 @@ namespace WeatherData
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
 
             if (env.IsDevelopment())
             {

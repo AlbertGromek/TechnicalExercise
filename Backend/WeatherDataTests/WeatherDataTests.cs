@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
+using WeatherData.Models;
 
 namespace WeatherDataTests
 {
@@ -124,10 +125,5 @@ namespace WeatherDataTests
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
-    }
-    public class WeatherErrorObject
-    {
-        public string Cod { get; set; }
-        public string Message { get; set; }
     }
 }

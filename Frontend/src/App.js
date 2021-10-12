@@ -20,17 +20,24 @@ function App() {
         if (response.status === 200) {
           return response.json();
         }
+        if (response.status === 400) {
+          return "400 - Bad Request";
+        }
         if (response.status === 401) {
-          return "Unauthorised. Check Client ID :)";
+          return "Unauthorised.";
         }
         if (response.status === 429) {
           return "Rate Limit Reached";
         }
+        if (response.status === 500) {
+          return "Bad Request - 500 Error";
+        }
+        return "An error has occured";
       })
       .then((response) => {
         setDisplay(response);
       })
-      .catch((error) => setDisplay("An error has occured."));
+      .catch(() => setDisplay("An error has occured."));
   }
 
   return (

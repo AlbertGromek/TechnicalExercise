@@ -6,6 +6,7 @@ using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Net;
+using WeatherData.Models;
 
 namespace WeatherData
 {
@@ -56,14 +57,9 @@ namespace WeatherData
                 }
                 else
                 {
-                    return "An error has occured.";
+                    return null;
                 }
             }
-        }
-        public class WeatherErrorObject
-        {
-            public string Cod { get; set; }
-            public string Message { get; set; }
         }
     }
 }

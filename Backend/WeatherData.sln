@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherData", "WeatherData\WeatherData.csproj", "{CDF3D073-9065-4FA0-A6A5-368659716ACD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherData", "WeatherData\WeatherData.csproj", "{CDF3D073-9065-4FA0-A6A5-368659716ACD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherDataTests", "WeatherDataTests\WeatherDataTests.csproj", "{D306537C-D080-4C81-91A2-4F0AF159B84F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherDataTests", "WeatherDataTests\WeatherDataTests.csproj", "{D306537C-D080-4C81-91A2-4F0AF159B84F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -18,14 +18,18 @@ namespace WeatherData.Controllers
         [HttpGet]
         public async Task<ActionResult> GetForecastAsync(string city, string countryCode)
         {
+            if(string.IsNullOrEmpty(city) && string.IsNullOrEmpty(countryCode))
+            {
+                return StatusCode(400);
+            }
             var weatherData = await _openWeatherService.GetWeatherData(city, countryCode);
-            if(!string.IsNullOrEmpty(weatherData) && !string.Equals("An error has occured", weatherData))
+            if(!string.IsNullOrEmpty(weatherData))
             {
                 return Ok(weatherData);
             }
             else
             {
-                return StatusCode(500);
+                return StatusCode(400);
             }
         }
     }
