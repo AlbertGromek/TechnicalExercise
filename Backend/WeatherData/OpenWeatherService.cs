@@ -52,7 +52,7 @@ namespace WeatherData
                         PropertyNameCaseInsensitive = true
                     };
                     var stringstuff = await response.Content.ReadAsStringAsync();
-                    var errorObject = JsonSerializer.Deserialize<ErrorObject>(stringstuff, options);
+                    var errorObject = JsonSerializer.Deserialize<WeatherErrorObject>(stringstuff, options);
                     return JsonSerializer.Serialize(errorObject.Message);
                 }
                 else
@@ -61,7 +61,7 @@ namespace WeatherData
                 }
             }
         }
-        private class ErrorObject
+        public class WeatherErrorObject
         {
             public string Cod { get; set; }
             public string Message { get; set; }
