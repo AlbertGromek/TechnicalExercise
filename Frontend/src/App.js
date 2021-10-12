@@ -20,6 +20,9 @@ function App() {
         if (response.status === 200) {
           return response.json();
         }
+        if (response.status === 401) {
+          return "Unauthorised. Check Client ID :)";
+        }
         if (response.status === 429) {
           return "Rate Limit Reached";
         }
