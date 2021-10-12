@@ -34,7 +34,7 @@ function App() {
     <div className="App">
       <h1>Weather Forecast</h1>
       <label>
-        Country Code (ISO-3661-2 Format):
+        Country:
         <input
           type="text"
           value={countryCode}
