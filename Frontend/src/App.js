@@ -36,6 +36,7 @@ function App() {
       <label>
         Country:
         <input
+          data-testid="city-id"
           type="text"
           value={countryCode}
           onChange={(e) => setCountryCode(e.target.value)}
@@ -45,13 +46,16 @@ function App() {
       <label>
         City:
         <input
+          data-testid="country-id"
           type="text"
           value={city}
           onChange={(e) => setCity(e.target.value)}
         />
       </label>
       <br />
-      <button className="button" onClick={fetchRequest}>Submit</button>
+      <button className="button" onClick={fetchRequest}>
+        Submit
+      </button>
       <div>
         <h2>{display}</h2>
       </div>
