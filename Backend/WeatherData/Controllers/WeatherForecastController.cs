@@ -1,11 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Net.Http;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace WeatherData.Controllers
 {
@@ -13,45 +7,26 @@ namespace WeatherData.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private readonly ILogger<WeatherForecastController> _logger;
-        private readonly IHttpClientFactory _clientFactory;
-        private readonly IConfiguration _configuration;
+        private readonly IWeatherService _openWeatherService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IHttpClientFactory clientFactory, IConfiguration configuration)
+        public WeatherForecastController(IWeatherService openWeatherService)
         {
-            _logger = logger;
-            _clientFactory = clientFactory;
-            _configuration = configuration;
+            _openWeatherService = openWeatherService;
         }
 
         [Route("forecast")]
         [HttpGet]
-        public async Task<WeatherForecast> GetForecastAsync(string city, string countryCode)
+        public async Task<ActionResult> GetForecastAsync(string city, string countryCode)
         {
-            var apiKey = _configuration.GetValue<string>("APIKey");
-            var url = _configuration.GetValue<string>("WeatherForecastURL");
-            var client = _clientFactory.CreateClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            var query = new Dictionary<string, string>
+            var weatherData = await _openWeatherService.GetWeatherData(city, countryCode);
+            if(!string.IsNullOrEmpty(weatherData) && !string.Equals("An error has occured", weatherData))
             {
-                ["appid"] = apiKey,
-                ["q"] = $"{city},{countryCode}",
-            };
-
-            var response = await client.GetAsync(QueryHelpers.AddQueryString(url, query));
-
-            if (response.IsSuccessStatusCode)
-            {
-                var jsonString = await response.Content.ReadAsStringAsync();
-                var weatherForecast = JsonSerializer.Deserialize<WeatherForecast>(jsonString);
-                return weatherForecast;
+                return Ok(weatherData);
             }
             else
             {
-                //TODO: Handle error
-                return null;
+                return StatusCode(500);
             }
-
         }
     }
 }

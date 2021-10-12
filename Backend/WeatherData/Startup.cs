@@ -19,6 +19,16 @@ namespace WeatherData
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Insecure! API intended for demo purposes only :D
+            services.AddCors(opt => {
+                opt.AddPolicy("CorsPolicy", policy => {
+                    policy
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                });
+            });
+
             //services for rate limits (https://github.com/stefanprodan/AspNetCoreRateLimit)
             services.AddOptions();
             services.AddMemoryCache();
@@ -32,6 +42,8 @@ namespace WeatherData
             services.AddHttpContextAccessor();
             services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 
+            services.AddSingleton<IWeatherService, OpenWeatherService>();
+            
             services.AddControllers();
             services.AddHttpClient();
         }
@@ -39,7 +51,7 @@ namespace WeatherData
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseClientRateLimiting();
+            
 
             if (env.IsDevelopment())
             {
@@ -48,6 +60,8 @@ namespace WeatherData
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors("CorsPolicy");
+            app.UseClientRateLimiting();
 
             app.UseAuthorization();
             app.UseMiddleware<ApiKeyMiddleware>();
