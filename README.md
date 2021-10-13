@@ -47,4 +47,10 @@ The ClientId (API Key) is hardcoded in App.js line 14. It is set to one of the 5
 
 There will be error messages received for when the rate limit is exceeded or the ClientId is not Authorised. (Or no API key is provided)
 
-Not providing city and country will result in a 400 error.
+Not providing city will result in a 400 error.
+
+## Testing
+
+To run tests for the Backend, right click on the WeatherData.Tests project in Visual Studio and click Run Tests.
+
+To run tests on the Frontend, run ```npm test``` from the Frontend folder.
