@@ -26,7 +26,7 @@ namespace WeatherData
         }
         public async Task<string> GetWeatherData(string city, string countryCode)
         {
-            var apiKey = _configuration.GetValue<string>("APIKey");
+            var apiKey = _configuration.GetValue<string>("OPEN_WEATHER_API_KEY");
             var url = _configuration.GetValue<string>("WeatherForecastURL");
             var client = _clientFactory.CreateClient();
             var query = new Dictionary<string, string>
