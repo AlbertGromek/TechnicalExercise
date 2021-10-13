@@ -42,6 +42,7 @@ To access the frontend navigate to ```http://localhost:3000/``` in the browser.
 Once you have entered a valid city and country (country code according to ISO 3166 2 letter format) and click submit, it will show the description of the weather report on the screen. 
 
 If you make more than 5 requests in one hour you will get a message on the screen that the rate limit has been exceeded.
+You can then use another one of the 5 API keys to make more requests.
 
 The ClientId (API Key) is hardcoded in App.js line 14. It is set to one of the 5 valid API keys, you can check that a 401 is received when the ClientId is changed, and a relevant error message appears on the screen.
 
