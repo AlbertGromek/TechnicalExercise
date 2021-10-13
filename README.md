@@ -37,13 +37,11 @@ It should be running on ```localhost:3000.```
 
 ## Usage
 
-NOTE: I set my API rate limit to 5 requests per minute, not the 5 per hour required in the spec. I figured it is easier for testing for myself, so it might be easier for you to test also.
-
 To access the frontend navigate to ```http://localhost:3000/``` in the browser.
 
 Once you have entered a valid city and country (country code according to ISO 3166 2 letter format) and click submit, it will show the description of the weather report on the screen. 
 
-If you make more than 5 requests in one minute you will get a message on the screen that the rate limit has been exceeded.
+If you make more than 5 requests in one hour you will get a message on the screen that the rate limit has been exceeded.
 
 The ClientId (API Key) is hardcoded in App.js line 14. It is set to one of the 5 valid API keys, you can check that a 401 is received when the ClientId is changed, and a relevant error message appears on the screen.
 
