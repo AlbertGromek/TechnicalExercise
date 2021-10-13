@@ -11,7 +11,7 @@ JB Hi-Fi technical exercise.
 
 #### Backend
 
-You will need to add a valid API key for OpenWeatherMap in line 10 of ```Backend/appsettings.json```
+You will need to add a valid API key for OpenWeatherMap in line 10 of ```Backend/WeatherData/appsettings.json```
 
 (Using this rudimentary way of storing secrets just to make it easy to run)
 
