@@ -18,7 +18,7 @@ namespace WeatherData.Controllers
         [HttpGet]
         public async Task<ActionResult> GetForecastAsync(string city, string countryCode)
         {
-            if(string.IsNullOrEmpty(city) && string.IsNullOrEmpty(countryCode))
+            if(string.IsNullOrEmpty(city))
             {
                 return StatusCode(400);
             }

@@ -29,10 +29,11 @@ namespace WeatherData
             var apiKey = _configuration.GetValue<string>("OPEN_WEATHER_API_KEY");
             var url = _configuration.GetValue<string>("WeatherForecastURL");
             var client = _clientFactory.CreateClient();
+            var location = string.IsNullOrEmpty(countryCode) ? $"{city}" : $"{city},{countryCode}";
             var query = new Dictionary<string, string>
             {
                 ["appid"] = apiKey,
-                ["q"] = $"{city},{countryCode}",
+                ["q"] = location,
             };
 
             var response = await client.GetAsync(QueryHelpers.AddQueryString(url, query));
