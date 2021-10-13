@@ -1,20 +1,31 @@
 # Technical Exercise
 
-Technical Exercise built according to the specifications given :) 
+JB Hi-Fi technical exercise.
+
+## Requirements
+- Visual Studio 2019
+- NPM
+- OpenWeatherMap API Key
 
 ## Installation
 
-Installation is pretty basic, just need to run some npm commands to get the frontend running and start the IIS server in Visual Studio.
+#### Backend
 
-## Backend Setup 
-Open the ```WeatherData.sln``` solution in Visual Studio 2019.
+You will need to add a valid API key for OpenWeatherMap in line 10 of ```Backend/appsettings.json```
 
-Start the project using IIS.
+(Using this rudimentary way of storing secrets just to make it easy to run)
 
-Check that the project is running on localhost port 44396.
+Example: 
+```"OPEN_WEATHER_API_KEY": ">>>INSERT_API_KEY_HERE<<<",```
 
-## Frontend Setup
-To start the front end, navigate to the frontend folder in your terminal, or open the Frontend folder in VSCode.
+You will then need to start the backend server using IIS in Visual Studio 2019, using the ```WeatherData.sln``` solution. It should be run on localhost port 44396.
+
+Once the backend is running, if you like you can verify it is running correctly making a request (using POSTMAN or similar) to ```https://localhost:44396/weatherforecast/forecast?city=melbourne&countryCode=au```, and adding a valid API key as a ClientId header.
+
+(ClientId:'Bob')
+
+#### Frontend
+To start the front end, navigate to the ```Frontend``` folder in your terminal, or open the ```Frontend``` folder in VSCode.
 
 Then run the following commands:
 
@@ -22,10 +33,11 @@ Then run the following commands:
 npm install
 npm start
 ```
+It should be running on ```localhost:3000.```
 
 ## Usage
 
-NOTE: I set my API rate limit to 5 requests per minute, not the 5 per hour required in the spec. I figured it is easier for testing for myself, so it might be easier for you to test also. Please let me know if you'd like me to change it to 5/hour and I can push up the changes!
+NOTE: I set my API rate limit to 5 requests per minute, not the 5 per hour required in the spec. I figured it is easier for testing for myself, so it might be easier for you to test also.
 
 To access the frontend navigate to ```http://localhost:3000/``` in the browser.
 
@@ -35,9 +47,6 @@ If you make more than 5 requests in one minute you will get a message on the scr
 
 The ClientId (API Key) is hardcoded in App.js line 14. It is set to one of the 5 valid API keys, you can check that a 401 is received when the ClientId is changed, and a relevant error message appears on the screen.
 
-If you'd like to test the Backend service using something like Postman you can make a request using the format below:
-
-```https://localhost:44396/weatherforecast/forecast?city=melbourne&countryCode=au```
-
-Passing the API key in the ```'ClientId'``` header.
 There will be error messages received for when the rate limit is exceeded or the ClientId is not Authorised. (Or no API key is provided)
+
+Not providing city and country will result in a 400 error.
