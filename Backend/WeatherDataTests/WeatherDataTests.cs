@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
-using WeatherData.Models;
 
 namespace WeatherDataTests
 {

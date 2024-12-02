@@ -6,7 +6,6 @@ using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Net;
-using WeatherData.Models;
 
 namespace WeatherData
 {
