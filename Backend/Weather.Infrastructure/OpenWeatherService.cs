@@ -1,22 +1,16 @@
-﻿using Microsoft.Extensions.Options;
-using System.Net;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 using Weather.Application.Configurations;
 using Weather.Application.Interfaces;
 using Weather.Domain.Models;
 
-namespace WeatherData.Infastructure
+namespace Weather.Infrastructure
 {
-    public class OpenWeatherService : IWeatherService
+    public class OpenWeatherService(IHttpClientFactory httpClientFactory, IOptions<OpenWeatherServiceOptions> options) : IWeatherService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly OpenWeatherServiceOptions _options;
-
-        public OpenWeatherService(IHttpClientFactory httpClientFactory, IOptions<OpenWeatherServiceOptions> options)
-        {
-            _httpClientFactory = httpClientFactory;
-            _options = options.Value;
-        }
+        private readonly OpenWeatherServiceOptions _options = options.Value;
+        private readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
         public async Task<string> GetWeatherDataAsync(string city, string countryCode)
         {
@@ -27,44 +21,24 @@ namespace WeatherData.Infastructure
 
             var location = string.IsNullOrEmpty(countryCode) ? city : $"{city},{countryCode}";
 
-            var uriBuilder = new UriBuilder(_options.WeatherForecastURL);
-            var queryParams = new Dictionary<string, string>
+            var queryParams = new Dictionary<string, string?>
             {
                 ["appid"] = _options.ApiKey,
                 ["q"] = location
             };
-            uriBuilder.Query = string.Join("&", queryParams.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
 
-            var client = _httpClientFactory.CreateClient();
+            var requestUri = QueryHelpers.AddQueryString(_options.WeatherForecastURL, queryParams);
 
-            try
-            {
-                using var response = await client.GetAsync(uriBuilder.Uri);
+            var client = httpClientFactory.CreateClient();
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var weatherForecast = JsonSerializer.Deserialize<WeatherForecast>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            using var response = await client.GetAsync(requestUri);
 
-                    return weatherForecast?.Weather?.FirstOrDefault()?.Description ?? "No weather description available.";
-                }
-                else
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
+            response.EnsureSuccessStatusCode();
 
-                    if (response.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        var errorDetails = JsonSerializer.Deserialize<WeatherErrorObject>(errorContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                        return errorDetails?.Message ?? "Error fetching weather data.";
-                    }
+            var content = await response.Content.ReadAsStringAsync();
+            var weatherForecast = JsonSerializer.Deserialize<WeatherForecast>(content, _jsonSerializerOptions);
 
-                    throw new HttpRequestException($"Error fetching weather data: {response.StatusCode} - {response.ReasonPhrase}");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while fetching weather data.", ex);
-            }
+            return weatherForecast?.Weather?.FirstOrDefault()?.Description ?? "No weather description available.";
         }
     }
 }

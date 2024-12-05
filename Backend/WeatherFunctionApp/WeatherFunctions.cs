@@ -8,36 +8,69 @@ namespace Weather.FuncApp
 {
     public class WeatherFunctions
     {
-        private readonly ILogger<WeatherFunctions> _logger;
-        private readonly IWeatherService _openWeatherService;
+        private readonly ILogger<WeatherFunctions> logger;
+        private readonly IWeatherService openWeatherService;
 
         public WeatherFunctions(ILogger<WeatherFunctions> logger, IWeatherService openWeatherService)
         {
-            _logger = logger;
-            _openWeatherService = openWeatherService;
+            this.logger = logger;
+            this.openWeatherService = openWeatherService;
+        }
+
+        [Function("GetWeatherForecastDescription")]
+        public async Task<IActionResult> GetWeatherForecastDescriptionAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "forecast/description")] HttpRequestData req)
+        {
+            logger.LogInformation("Processing weather forecast description request.");
+
+            var queryParams = req.Query; 
+            var city = queryParams["city"];
+            var countryCode = queryParams["countryCode"];
+
+            if (string.IsNullOrWhiteSpace(city))
+            {
+                return new BadRequestObjectResult("City is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(countryCode))
+            {
+                return new BadRequestObjectResult("Country code is required.");
+            }
+
+            var weatherData = await openWeatherService.GetWeatherDataAsync(city, countryCode);
+
+            if (!string.IsNullOrEmpty(weatherData))
+            {
+                return new OkObjectResult(weatherData);
+            }
+            else
+            {
+                return new BadRequestObjectResult("Unable to retrieve weather data.");
+            }
         }
 
         [Function("GetWeatherForecast")]
         public async Task<IActionResult> GetWeatherForecastAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "forecast")] HttpRequestData req)
         {
-            _logger.LogInformation("Processing weather forecast request.");
+            logger.LogInformation("Processing weather forecast request.");
 
-            var query = System.Web.HttpUtility.ParseQueryString(req.Url.Query);
-            var city = query["city"];
-            var countryCode = query["countryCode"];
+            var queryParams = req.Query; 
+            var city = queryParams["city"];
+            var countryCode = queryParams["countryCode"];
 
-            if (string.IsNullOrEmpty(city))
+            if (string.IsNullOrWhiteSpace(city))
             {
                 return new BadRequestObjectResult("City is required.");
             }
 
-            if (string.IsNullOrEmpty(countryCode))
+            if (string.IsNullOrWhiteSpace(countryCode))
             {
                 return new BadRequestObjectResult("Country code is required.");
             }
 
-            var weatherData = await _openWeatherService.GetWeatherDataAsync(city, countryCode);
+            var weatherData = await openWeatherService.GetWeatherDataAsync(city, countryCode);
+
             if (!string.IsNullOrEmpty(weatherData))
             {
                 return new OkObjectResult(weatherData);

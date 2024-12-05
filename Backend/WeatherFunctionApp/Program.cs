@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Weather.Application.Configurations;
 using Weather.Application.Interfaces;
-using WeatherData.Infastructure;
+using Weather.Infrastructure;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
