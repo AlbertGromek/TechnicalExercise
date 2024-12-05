@@ -6,16 +6,10 @@ using Weather.Application.Interfaces;
 
 namespace Weather.FuncApp
 {
-    public class WeatherFunctions
+    public class WeatherFunctions(ILogger<WeatherFunctions> logger, IWeatherService openWeatherService)
     {
-        private readonly ILogger<WeatherFunctions> logger;
-        private readonly IWeatherService openWeatherService;
-
-        public WeatherFunctions(ILogger<WeatherFunctions> logger, IWeatherService openWeatherService)
-        {
-            this.logger = logger;
-            this.openWeatherService = openWeatherService;
-        }
+        private readonly ILogger<WeatherFunctions> logger = logger;
+        private readonly IWeatherService openWeatherService = openWeatherService;
 
         [Function("GetWeatherForecastDescription")]
         public async Task<IActionResult> GetWeatherForecastDescriptionAsync(
