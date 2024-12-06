@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using System.Net;
 using Weather.Application.Interfaces;
 
 namespace Weather.FuncApp
@@ -12,6 +15,11 @@ namespace Weather.FuncApp
         private readonly IWeatherService openWeatherService = openWeatherService;
 
         [Function("GetWeatherForecastDescription")]
+        [OpenApiOperation(operationId: "GetWeatherForecastDescription", tags: ["Weather"])]
+        [OpenApiParameter(name: "city", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "The city name")]
+        [OpenApiParameter(name: "countryCode", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "The country code")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(string), Description = "The OK response")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(string), Description = "Bad Request")]
         public async Task<IActionResult> GetWeatherForecastDescriptionAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "forecast/description")] HttpRequestData req)
         {

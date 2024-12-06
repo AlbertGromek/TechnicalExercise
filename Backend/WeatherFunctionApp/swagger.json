@@ -1,0 +1,56 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "OpenAPI Document on Azure Functions",
+    "description": "This is the OpenAPI Document on Azure Functions",
+    "version": "1.0.0"
+  },
+  "host": "localhost:7278",
+  "basePath": "/api",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/forecast/description": {
+      "get": {
+        "tags": [
+          "Weather"
+        ],
+        "operationId": "GetWeatherForecastDescription",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "city",
+            "description": "The city name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "countryCode",
+            "description": "The country code",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The OK response",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
