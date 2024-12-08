@@ -7,7 +7,7 @@ stages:
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     displayName: Deploy Api
     jobs:
-      - job: Deploy
+      - deployment: Deploy
         displayName: Deploy Api
         environment: 'development'
         pool:
