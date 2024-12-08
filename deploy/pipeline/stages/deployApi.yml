@@ -13,11 +13,14 @@ stages:
         pool:
           vmImage: $(vmImageName)
         condition: succeeded()
-        steps:
-          - task: AzureFunctionApp@1
-            inputs:
-              azureSubscription: ${{ parameters.azureServiceConnection }}
-              appType: 'functionApp'
-              appName: 'weather-data-api'
-              package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-              deploymentMethod: 'auto'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureFunctionApp@1
+                  inputs:
+                    azureSubscription: ${{ parameters.azureServiceConnection }}
+                    appType: 'functionApp'
+                    appName: 'weather-data-api'
+                    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+                    deploymentMethod: 'auto'
