@@ -5,22 +5,18 @@ parameters:
 stages:
   - stage: Deploy
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-    displayName: Deploy to Environment
+    displayName: Deploy Api
     jobs:
-      - deployment: Deploy
-        displayName: Deploy Environment
-        environment: 'development'
+      - job: Deploy
+        displayName: Deploy Api
         pool:
           vmImage: $(vmImageName)
         condition: succeeded()
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-              - task: AzureFunctionApp@1
-                inputs:
-                  azureSubscription: ${{ parameters.azureServiceConnection }}
-                  appType: 'functionApp'
-                  appName: 'weather-data-api'
-                  package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-                  deploymentMethod: 'auto'
+        steps:
+          - task: AzureFunctionApp@1
+            inputs:
+              azureSubscription: ${{ parameters.azureServiceConnection }}
+              appType: 'functionApp'
+              appName: 'weather-data-api'
+              package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+              deploymentMethod: 'auto'
