@@ -9,6 +9,7 @@ stages:
     jobs:
       - job: Deploy
         displayName: Deploy Api
+        environment: 'development'
         pool:
           vmImage: $(vmImageName)
         condition: succeeded()
