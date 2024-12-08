@@ -14,8 +14,8 @@ variables:
 stages:
   - template: pipeline/stages/testAndBuild.yml
     parameters:
-      azureServiceConnection: 'b057fd6f-72b4-4701-9330-32deb9830270'
+      azureServiceConnection: '9ab87f72-48d2-47f9-a7de-81aaf8416976'
 
   - template: pipeline/stages/deployApi.yml
     parameters: 
-      azureServiceConnection: 'b057fd6f-72b4-4701-9330-32deb9830270'
+      azureServiceConnection: '9ab87f72-48d2-47f9-a7de-81aaf8416976'
