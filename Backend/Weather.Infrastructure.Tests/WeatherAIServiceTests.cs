@@ -5,6 +5,7 @@ using Moq.Protected;
 using System.Net;
 using Weather.Application.Configurations;
 using Weather.Domain.Models;
+using Weather.Infrastructure.Services;
 
 namespace Weather.Infrastructure.Tests
 {

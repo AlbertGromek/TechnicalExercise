@@ -3,8 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Weather.Application.Configurations;
 using Weather.Application.Interfaces;
-using Weather.Infrastructure;
 using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
+using Weather.Infrastructure.Services;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication(workerApp =>

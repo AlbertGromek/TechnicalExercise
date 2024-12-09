@@ -9,7 +9,7 @@ using System.Net;
 using Weather.Application.Interfaces;
 using Weather.Domain.Models;
 
-namespace Weather.FuncApp
+namespace Weather.FuncApp.Functions
 {
     public class WeatherFunctions(ILogger<WeatherFunctions> logger, IWeatherService openWeatherService, IWeatherAIService weatherAIService)
     {

@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 using System.Net;
 using Weather.Domain.Models.AzureAI;
 
-namespace Weather.Infrastructure
+namespace Weather.Infrastructure.Services
 {
     public class WeatherAIService(IHttpClientFactory httpClientFactory, IOptions<WeatherAIServiceOptions> options, ILogger<WeatherAIService> logger) : IWeatherAIService
     {
