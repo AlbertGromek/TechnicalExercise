@@ -22,6 +22,7 @@ namespace Weather.FuncApp.Functions
         [OpenApiRequestBody("application/json", typeof(WeatherDescriptionRequest), Description = "The weather description request", Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(string), Description = "The OK response")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(string), Description = "Bad Request")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.NotFound, contentType: "application/json", bodyType: typeof(string), Description = "City or country not found")]
         public async Task<IActionResult> GetWeatherForecastDescriptionAsync(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "forecast/description")] HttpRequestData req)
         {
@@ -34,17 +35,25 @@ namespace Weather.FuncApp.Functions
                 return new BadRequestObjectResult("Invalid request. City and CountryCode are required.");
             }
 
-            var weatherData = await _openWeatherService.GetWeatherDataAsync(request.City, request.CountryCode);
+            try
+            {
+                var weatherData = await _openWeatherService.GetWeatherDataAsync(request.City, request.CountryCode);
 
-            if (!string.IsNullOrEmpty(weatherData))
-            {
-                return new OkObjectResult(weatherData);
+                if (!string.IsNullOrEmpty(weatherData))
+                {
+                    return new OkObjectResult(weatherData);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("Unable to retrieve weather data.");
+                }
             }
-            else
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
-                return new BadRequestObjectResult("Unable to retrieve weather data.");
+                return new NotFoundObjectResult("City or country not found");
             }
         }
+
 
 
         [Function("GetWhatToWear")]

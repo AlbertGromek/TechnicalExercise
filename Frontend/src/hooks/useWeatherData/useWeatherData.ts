@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Client, WeatherDescriptionRequest } from "../../api/generated-weather-data-api-client";
+import {
+  Client,
+  WeatherDescriptionRequest,
+} from "../../api/generated-weather-data-api-client";
 import { useWeather } from "../../context/WeatherContext";
 
 const useWeatherData = () => {
@@ -18,7 +21,7 @@ const useWeatherData = () => {
       const weather = await client.getWeatherForecastDescription(request);
       setWeatherReport(weather.result);
       if (request.countryCode && request.city && weather) {
-        setWeatherData(request.countryCode, request.city, weather.result); 
+        setWeatherData(request.countryCode, request.city, weather.result);
       } else {
         throw new Error("Invalid weather data");
       }
@@ -31,6 +34,8 @@ const useWeatherData = () => {
         setError("Rate Limit Reached");
       } else if (err.status === 500) {
         setError("Server Error - 500");
+      } else if (err.status === 404) {
+        setError("City or country not found.");
       } else {
         setError("An unexpected error occurred.");
       }

@@ -5,7 +5,7 @@ using Weather.Application.Configurations;
 using Weather.Application.Interfaces;
 using Weather.Domain.Models.OpenWeatherService;
 
-namespace Weather.Infrastructure
+namespace Weather.Infrastructure.Services
 {
     public class OpenWeatherService : IWeatherService
     {
@@ -39,6 +39,12 @@ namespace Weather.Infrastructure
             var client = _httpClientFactory.CreateClient();
 
             using var response = await client.GetAsync(requestUri);
+
+            if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new HttpRequestException($"City/Country combination was not found", null, System.Net.HttpStatusCode.NotFound);
+
+            }
 
             if (!response.IsSuccessStatusCode)
             {
