@@ -91,5 +91,3 @@ Or alternatively can try to change the .NET version in the nswag.json file in th
 ```
 - Two package vulnerabilities in the backend project. (see https://github.com/Azure/azure-functions-openapi-extension/issues/671)
 - Hot reload does not seem to be working after upgrading to React 19 and not upgrading react-scripts (hisotircal attempts to upgrade react-scripts in other projects have been time-consuming).
-- Frontend does not clear "What to Wear" and "Recommendations" after the city is changed.
-- Loading states for "What to Wear" and "Recommendations" are not shown, and Azure is a bit slow with the AI stuff.
