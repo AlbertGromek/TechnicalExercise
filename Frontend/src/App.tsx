@@ -1,9 +1,9 @@
 import "./App.css";
 import React from "react";
 import { WeatherProvider, useWeather } from "./context/WeatherContext";
-import WeatherDescription from "./components/WeatherDescription";
-import WhatToWear from "./components/WhatToWear";
-import DayRecommendations from "./components/DayRecommendations";
+import WeatherDescription from "./components/WeatherDescription/WeatherDescription";
+import WhatToWear from "./components/WhatToWear/WhatToWear";
+import DayRecommendations from "./components/DayRecommendations/DayRecommendations";
 
 const App: React.FC = () => {
   const { weatherDescription } = useWeather();

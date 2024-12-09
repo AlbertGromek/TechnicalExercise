@@ -1,6 +1,6 @@
 import React from "react";
-import { useWeather } from "../context/WeatherContext";
-import useFetchAI from "../hooks/useFetchAI/useFetchAI";
+import { useWeather } from "../../context/WeatherContext";
+import useFetchAI from "../../hooks/useFetchAI/useFetchAI";
 
 const WhatToWear: React.FC = () => {
   const { aiResponses, setWhatToWear } = useWeather();

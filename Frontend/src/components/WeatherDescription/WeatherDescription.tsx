@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { WeatherDescriptionRequest } from "../api/generated-weather-data-api-client";
-import useWeatherData from "../hooks/useWeatherData/useWeatherData";
-import { useWeather } from "../context/WeatherContext";
+import { WeatherDescriptionRequest } from "../../api/generated-weather-data-api-client";
+import useWeatherData from "../../hooks/useWeatherData/useWeatherData";
+import { useWeather } from "../../context/WeatherContext";
 
 const WeatherDescription: React.FC = () => {
   const [city, setCity] = useState<string>("");
