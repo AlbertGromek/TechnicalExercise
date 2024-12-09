@@ -25,7 +25,7 @@ To make the project a bit closer to the code I would write today compared to the
 
 #### Backend
 
-Add the following `local.settings.json` file in the `Weather.FunApp` project, replacing the weather API key with a real one, and I will send you a free tier Azure API key:
+Add the following `local.settings.json` file in the `Weather.FuncApp` project, replacing the weather API key with a real one, and I will send you a free tier Azure API key:
 
 ```json
 {
@@ -49,7 +49,7 @@ Add the following `local.settings.json` file in the `Weather.FunApp` project, re
 }
 ```
 
-Then you can run it normally.
+Then you can run it normally. There are tests too that you can run the normal way.
 
 #### Frontend
 To start the front end, navigate to the ```Frontend``` folder in your terminal, or open the ```Frontend``` folder in VSCode.
@@ -61,6 +61,8 @@ npm install
 npm start
 ```
 It should be running on ```localhost:3000.```
+
+You can run the tests by doing ```npm run test``` from the frontend folder.
 
 ## Usage
 
