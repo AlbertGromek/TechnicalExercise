@@ -91,3 +91,4 @@ Or alternatively can try to change the .NET version in the nswag.json file in th
 ```
 - Two package vulnerabilities in the backend project. (see https://github.com/Azure/azure-functions-openapi-extension/issues/671)
 - Hot reload does not seem to be working after upgrading to React 19 and not upgrading react-scripts (hisotircal attempts to upgrade react-scripts in other projects have been time-consuming).
+- The day recommendations are quite long and should be formatted better
