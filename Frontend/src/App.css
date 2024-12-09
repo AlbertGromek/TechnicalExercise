@@ -19,8 +19,18 @@ label {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+p {
+	color: #FFFFFF;
+	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
 h1 {
 	color: #4ACFAC;
+	background-color: #262833;
+}
+
+h4, h3 {
+	color: #c297c4;
 	background-color: #262833;
 }
 
@@ -37,4 +47,13 @@ button {
 	font-size: 16px;
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
     cursor: pointer;
+}
+
+.changes ul {
+	list-style-type: none;
+	padding: 0;
+}
+  
+.changes ul li {
+	color: white;
 }

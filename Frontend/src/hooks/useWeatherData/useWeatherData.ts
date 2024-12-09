@@ -1,25 +1,28 @@
 import { useState } from "react";
-import { weatherApiClient } from "../api";
-
-interface FetchWeatherDataProps {
-  city: string;
-  countryCode: string;
-}
+import { Client, WeatherDescriptionRequest } from "../../api/generated-weather-data-api-client";
+import { useWeather } from "../../context/WeatherContext";
 
 const useWeatherData = () => {
   const [weatherReport, setWeatherReport] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const { setWeatherData } = useWeather();
 
-  const fetchWeatherData = async ({ city, countryCode }: FetchWeatherDataProps) => {
+  const fetchWeatherData = async (request: WeatherDescriptionRequest) => {
     setLoading(true);
     setError(null);
 
+    const client = new Client();
+
     try {
-      const weather = await weatherApiClient.getWeatherForecastDescription(city, countryCode);
-      setWeatherReport(weather);
+      const weather = await client.getWeatherForecastDescription(request);
+      setWeatherReport(weather.result);
+      if (request.countryCode && request.city && weather) {
+        setWeatherData(request.countryCode, request.city, weather.result); 
+      } else {
+        throw new Error("Invalid weather data");
+      }
     } catch (err: any) {
-      // Leaving these here to make it easier for anyone who is testing this non production code :D 
       if (err.status === 400) {
         setError("400 - Bad Request");
       } else if (err.status === 401) {

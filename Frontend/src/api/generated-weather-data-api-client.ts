@@ -8,17 +8,7 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-export interface IClient {
-
-    /**
-     * @param city The city name
-     * @param countryCode The country code
-     * @return The OK response
-     */
-    getWeatherForecastDescription(city: string, countryCode: string): Promise<string>;
-}
-
-export class Client implements IClient {
+export class Client {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -29,25 +19,20 @@ export class Client implements IClient {
     }
 
     /**
-     * @param city The city name
-     * @param countryCode The country code
+     * @param body The weather description request
      * @return The OK response
      */
-    getWeatherForecastDescription(city: string, countryCode: string): Promise<string> {
-        let url_ = this.baseUrl + "/forecast/description?";
-        if (city === undefined || city === null)
-            throw new Error("The parameter 'city' must be defined and cannot be null.");
-        else
-            url_ += "city=" + encodeURIComponent("" + city) + "&";
-        if (countryCode === undefined || countryCode === null)
-            throw new Error("The parameter 'countryCode' must be defined and cannot be null.");
-        else
-            url_ += "countryCode=" + encodeURIComponent("" + countryCode) + "&";
+    getWeatherForecastDescription(body: WeatherDescriptionRequest): Promise<SwaggerResponse<string>> {
+        let url_ = this.baseUrl + "/forecast/description";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(body);
+
         let options_: RequestInit = {
-            method: "GET",
+            body: content_,
+            method: "POST",
             headers: {
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             }
         };
@@ -57,7 +42,7 @@ export class Client implements IClient {
         });
     }
 
-    protected processGetWeatherForecastDescription(response: Response): Promise<string> {
+    protected processGetWeatherForecastDescription(response: Response): Promise<SwaggerResponse<string>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -66,7 +51,7 @@ export class Client implements IClient {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
                 result200 = resultData200 !== undefined ? resultData200 : <any>null;
     
-            return result200;
+            return new SwaggerResponse(status, _headers, result200);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
@@ -81,7 +66,247 @@ export class Client implements IClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<string>(null as any);
+        return Promise.resolve<SwaggerResponse<string>>(new SwaggerResponse(status, _headers, null as any));
+    }
+
+    /**
+     * @param body The weather AI request
+     * @return The OK response
+     */
+    getWhatToWear(body: WeatherAIRequest): Promise<SwaggerResponse<WeatherAIResponse>> {
+        let url_ = this.baseUrl + "/ai/what-to-wear";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetWhatToWear(_response);
+        });
+    }
+
+    protected processGetWhatToWear(response: Response): Promise<SwaggerResponse<WeatherAIResponse>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WeatherAIResponse.fromJS(resultData200);
+            return new SwaggerResponse(status, _headers, result200);
+            });
+        } else if (status === 429) {
+            return response.text().then((_responseText) => {
+            let result429: any = null;
+            let resultData429 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result429 = WeatherAIResponse.fromJS(resultData429);
+            return throwException("Rate limit exceeded", status, _responseText, _headers, result429);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = WeatherAIResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SwaggerResponse<WeatherAIResponse>>(new SwaggerResponse(status, _headers, null as any));
+    }
+
+    /**
+     * @param body The weather AI request
+     * @return The OK response
+     */
+    getDayRecommendations(body: WeatherAIRequest): Promise<SwaggerResponse<string>> {
+        let url_ = this.baseUrl + "/ai/day-recommendations";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetDayRecommendations(_response);
+        });
+    }
+
+    protected processGetDayRecommendations(response: Response): Promise<SwaggerResponse<string>> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return new SwaggerResponse(status, _headers, result200);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result400 = resultData400 !== undefined ? resultData400 : <any>null;
+    
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SwaggerResponse<string>>(new SwaggerResponse(status, _headers, null as any));
+    }
+}
+
+export class WeatherAIRequest implements IWeatherAIRequest {
+    description!: string;
+    city!: string;
+    country!: string;
+
+    constructor(data?: IWeatherAIRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.description = _data["description"];
+            this.city = _data["city"];
+            this.country = _data["country"];
+        }
+    }
+
+    static fromJS(data: any): WeatherAIRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new WeatherAIRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["description"] = this.description;
+        data["city"] = this.city;
+        data["country"] = this.country;
+        return data;
+    }
+}
+
+export interface IWeatherAIRequest {
+    description: string;
+    city: string;
+    country: string;
+}
+
+export class WeatherAIResponse implements IWeatherAIResponse {
+    content?: string | undefined;
+
+    constructor(data?: IWeatherAIResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.content = _data["content"];
+        }
+    }
+
+    static fromJS(data: any): WeatherAIResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WeatherAIResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["content"] = this.content;
+        return data;
+    }
+}
+
+export interface IWeatherAIResponse {
+    content?: string | undefined;
+}
+
+export class WeatherDescriptionRequest implements IWeatherDescriptionRequest {
+    city?: string | undefined;
+    countryCode?: string | undefined;
+
+    constructor(data?: IWeatherDescriptionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.city = _data["city"];
+            this.countryCode = _data["countryCode"];
+        }
+    }
+
+    static fromJS(data: any): WeatherDescriptionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new WeatherDescriptionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["city"] = this.city;
+        data["countryCode"] = this.countryCode;
+        return data;
+    }
+}
+
+export interface IWeatherDescriptionRequest {
+    city?: string | undefined;
+    countryCode?: string | undefined;
+}
+
+export class SwaggerResponse<TResult> {
+    status: number;
+    headers: { [key: string]: any; };
+    result: TResult;
+
+    constructor(status: number, headers: { [key: string]: any; }, result: TResult)
+    {
+        this.status = status;
+        this.headers = headers;
+        this.result = result;
     }
 }
 

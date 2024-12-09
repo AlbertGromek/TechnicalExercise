@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -6,40 +7,34 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System.Net;
 using Weather.Application.Interfaces;
+using Weather.Domain.Models;
 
 namespace Weather.FuncApp
 {
-    public class WeatherFunctions(ILogger<WeatherFunctions> logger, IWeatherService openWeatherService)
+    public class WeatherFunctions(ILogger<WeatherFunctions> logger, IWeatherService openWeatherService, IWeatherAIService weatherAIService)
     {
-        private readonly ILogger<WeatherFunctions> logger = logger;
-        private readonly IWeatherService openWeatherService = openWeatherService;
+        private readonly ILogger<WeatherFunctions> _logger = logger;
+        private readonly IWeatherService _openWeatherService = openWeatherService;
+        private readonly IWeatherAIService _weatherAIService = weatherAIService;
 
         [Function("GetWeatherForecastDescription")]
         [OpenApiOperation(operationId: "GetWeatherForecastDescription", tags: ["Weather"])]
-        [OpenApiParameter(name: "city", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "The city name")]
-        [OpenApiParameter(name: "countryCode", In = ParameterLocation.Query, Required = true, Type = typeof(string), Description = "The country code")]
+        [OpenApiRequestBody("application/json", typeof(WeatherDescriptionRequest), Description = "The weather description request", Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(string), Description = "The OK response")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(string), Description = "Bad Request")]
         public async Task<IActionResult> GetWeatherForecastDescriptionAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "forecast/description")] HttpRequestData req)
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "forecast/description")] HttpRequestData req)
         {
-            logger.LogInformation("Processing weather forecast description request.");
+            _logger.LogInformation("Processing weather forecast description request.");
 
-            var queryParams = req.Query; 
-            var city = queryParams["city"];
-            var countryCode = queryParams["countryCode"];
+            var request = await req.ReadFromJsonAsync<WeatherDescriptionRequest>();
 
-            if (string.IsNullOrWhiteSpace(city))
+            if (request == null || string.IsNullOrWhiteSpace(request.City) || string.IsNullOrWhiteSpace(request.CountryCode))
             {
-                return new BadRequestObjectResult("City is required.");
+                return new BadRequestObjectResult("Invalid request. City and CountryCode are required.");
             }
 
-            if (string.IsNullOrWhiteSpace(countryCode))
-            {
-                return new BadRequestObjectResult("Country code is required.");
-            }
-
-            var weatherData = await openWeatherService.GetWeatherDataAsync(city, countryCode);
+            var weatherData = await _openWeatherService.GetWeatherDataAsync(request.City, request.CountryCode);
 
             if (!string.IsNullOrEmpty(weatherData))
             {
@@ -51,36 +46,69 @@ namespace Weather.FuncApp
             }
         }
 
-        [Function("GetWeatherForecast")]
-        public async Task<IActionResult> GetWeatherForecastAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "forecast")] HttpRequestData req)
+
+        [Function("GetWhatToWear")]
+        [OpenApiOperation(operationId: "GetWhatToWear", tags: ["AI"])]
+        [OpenApiRequestBody("application/json", typeof(WeatherAIRequest), Description = "The weather AI request", Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "The OK response")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.TooManyRequests, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "Rate limit exceeded")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "Bad Request")]
+        public async Task<HttpResponseData> GetWhatToWearAsync(
+     [HttpTrigger(AuthorizationLevel.Function, "post", Route = "ai/what-to-wear")] HttpRequestData req)
         {
-            logger.LogInformation("Processing weather forecast request.");
+            _logger.LogInformation("Processing AI what to wear request.");
 
-            var queryParams = req.Query; 
-            var city = queryParams["city"];
-            var countryCode = queryParams["countryCode"];
+            var request = await req.ReadFromJsonAsync<WeatherAIRequest>();
 
-            if (string.IsNullOrWhiteSpace(city))
+            if (request == null || string.IsNullOrWhiteSpace(request.Description) || string.IsNullOrWhiteSpace(request.City) || string.IsNullOrWhiteSpace(request.Country))
             {
-                return new BadRequestObjectResult("City is required.");
+                var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+                var errorResponse = new WeatherAIResponse("Invalid request. Description, City, and Country are required.");
+                await badRequestResponse.WriteAsJsonAsync(errorResponse);
+                return badRequestResponse;
             }
 
-            if (string.IsNullOrWhiteSpace(countryCode))
+            try
             {
-                return new BadRequestObjectResult("Country code is required.");
+                var aiResponse = await _weatherAIService.GetWhatToWearAsync(request);
+
+                var okResponse = req.CreateResponse(HttpStatusCode.OK);
+                var successResponse = new WeatherAIResponse(aiResponse);
+                await okResponse.WriteAsJsonAsync(successResponse);
+                return okResponse;
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.TooManyRequests)
+            {
+                var retryAfter = ex.Data["Retry-After"]?.ToString();
+
+                var tooManyRequestsResponse = req.CreateResponse(HttpStatusCode.TooManyRequests);
+                var errorContent = $"Rate limit exceeded. Please retry later. Retry-After: {retryAfter}";
+                var errorResponse = new WeatherAIResponse(errorContent);
+                await tooManyRequestsResponse.WriteAsJsonAsync(errorResponse);
+                return tooManyRequestsResponse;
+            }
+        }
+
+
+        [Function("GetDayRecommendations")]
+        [OpenApiOperation(operationId: "GetDayRecommendations", tags: ["AI"])]
+        [OpenApiRequestBody("application/json", typeof(WeatherAIRequest), Description = "The weather AI request", Required = true)]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(string), Description = "The OK response")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(string), Description = "Bad Request")]
+        public async Task<IActionResult> GetDayRecommendationsAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "ai/day-recommendations")] HttpRequestData req)
+        {
+            _logger.LogInformation("Processing AI day recommendations request.");
+
+            var request = await req.ReadFromJsonAsync<WeatherAIRequest>();
+
+            if (request == null || string.IsNullOrWhiteSpace(request.Description) || string.IsNullOrWhiteSpace(request.City) || string.IsNullOrWhiteSpace(request.Country))
+            {
+                return new BadRequestObjectResult("Invalid request. Description, City, and Country are required.");
             }
 
-            var weatherData = await openWeatherService.GetWeatherDataAsync(city, countryCode);
-
-            if (!string.IsNullOrEmpty(weatherData))
-            {
-                return new OkObjectResult(weatherData);
-            }
-            else
-            {
-                return new BadRequestObjectResult("Unable to retrieve weather data.");
-            }
+            var aiResponse = await _weatherAIService.GetDayRecommendationsAsync(request);
+            return new OkObjectResult(aiResponse);
         }
     }
 }

@@ -12,28 +12,26 @@
   ],
   "paths": {
     "/forecast/description": {
-      "get": {
+      "post": {
         "tags": [
           "Weather"
         ],
         "operationId": "GetWeatherForecastDescription",
+        "consumes": [
+          "application/json"
+        ],
         "produces": [
           "application/json"
         ],
         "parameters": [
           {
-            "in": "query",
-            "name": "city",
-            "description": "The city name",
+            "in": "body",
+            "name": "body",
+            "description": "The weather description request",
             "required": true,
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "countryCode",
-            "description": "The country code",
-            "required": true,
-            "type": "string"
+            "schema": {
+              "$ref": "#/definitions/weatherDescriptionRequest"
+            }
           }
         ],
         "responses": {
@@ -49,6 +47,133 @@
               "type": "string"
             }
           }
+        }
+      }
+    },
+    "/ai/what-to-wear": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "operationId": "GetWhatToWear",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The weather AI request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/weatherAIRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The OK response",
+            "schema": {
+              "$ref": "#/definitions/weatherAIResponse"
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "schema": {
+              "$ref": "#/definitions/weatherAIResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/weatherAIResponse"
+            }
+          }
+        }
+      }
+    },
+    "/ai/day-recommendations": {
+      "post": {
+        "tags": [
+          "AI"
+        ],
+        "operationId": "GetDayRecommendations",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "The weather AI request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/weatherAIRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The OK response",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "weatherAIRequest": {
+      "required": [
+        "description",
+        "city",
+        "country"
+      ],
+      "type": "object",
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "city": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "country": {
+          "minLength": 1,
+          "type": "string"
+        }
+      }
+    },
+    "weatherAIResponse": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string"
+        }
+      }
+    },
+    "weatherDescriptionRequest": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "string"
+        },
+        "countryCode": {
+          "type": "string"
         }
       }
     }

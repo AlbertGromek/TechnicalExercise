@@ -21,8 +21,11 @@ var host = new HostBuilder()
     {
         services.Configure<OpenWeatherServiceOptions>(
             context.Configuration.GetSection(OpenWeatherServiceOptions.SectionName));
+        services.Configure<WeatherAIServiceOptions>(
+            context.Configuration.GetSection(WeatherAIServiceOptions.SectionName));
 
         services.AddScoped<IWeatherService, OpenWeatherService>();
+        services.AddScoped<IWeatherAIService, WeatherAIService>();
         services.AddHttpClient();
     })
     .Build();

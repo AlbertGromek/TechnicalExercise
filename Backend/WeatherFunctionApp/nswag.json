@@ -24,16 +24,14 @@
       "dateTimeType": "Date",
       "nullValue": "Undefined",
       "generateClientClasses": true,
-      "generateClientInterfaces": true,
-      "generateOptionalParameters": true,
+      "generateClientInterfaces": false,
+      "generateOptionalParameters": false,
       "exportTypes": true,
       "wrapDtoExceptions": false,
       "exceptionClass": "SwaggerException",
       "clientBaseClass": null,
-      "wrapResponses": false,
       "wrapResponseMethods": [],
       "generateResponseClasses": true,
-      "responseClass": "SwaggerResponse",
       "protectedMethods": [],
       "configurationClass": null,
       "useTransformOptionsMethod": false,
@@ -67,7 +65,10 @@
       "serviceHost": null,
       "serviceSchemes": null,
       "output": "../../frontend/src/api/generated-weather-data-api-client.ts",
-      "newLineBehavior": "Auto"
+      "newLineBehavior": "Auto",
+      "wrapResponses": true,
+      "responseClass": "SwaggerResponse",
+      "jsonPropertyAttributeHandling": "Strict"
     }
   }
 }
