@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { WeatherDescriptionRequest } from "../api/generated-weather-data-api-client";
 import useWeatherData from "../hooks/useWeatherData/useWeatherData";
+import { useWeather } from "../context/WeatherContext";
 
 const WeatherDescription: React.FC = () => {
   const [city, setCity] = useState<string>("");
   const [countryCode, setCountryCode] = useState<string>("");
   const { weatherReport, error, loading, fetchWeatherData } = useWeatherData();
+  const { clearAIResponses } = useWeather();
 
   const handleFetch = () => {
     if (!city || !countryCode) {
@@ -21,6 +23,16 @@ const WeatherDescription: React.FC = () => {
     }
   };
 
+  const handleCityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCity(e.target.value);
+    clearAIResponses();
+  };
+
+  const handleCountryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCountryCode(e.target.value);
+    clearAIResponses();
+  };
+
   return (
     <div>
       <h1>Weather Forecast</h1>
@@ -30,7 +42,7 @@ const WeatherDescription: React.FC = () => {
           data-testid="city-id"
           type="text"
           value={countryCode}
-          onChange={(e) => setCountryCode(e.target.value)}
+          onChange={handleCountryChange}
         />
       </label>
       <br />
@@ -40,7 +52,7 @@ const WeatherDescription: React.FC = () => {
           data-testid="country-id"
           type="text"
           value={city}
-          onChange={(e) => setCity(e.target.value)}
+          onChange={handleCityChange}
         />
       </label>
       <br />

@@ -1,45 +1,17 @@
-import React, { useState } from "react";
-import {
-  Client,
-  WeatherAIRequest,
-} from "../api/generated-weather-data-api-client";
+import React from "react";
 import { useWeather } from "../context/WeatherContext";
-import { handleApiError } from "../api/errorHandlerUtils";
+import useFetchAI from "../hooks/useFetchAI/useFetchAI";
 
 const DayRecommendations: React.FC = () => {
-  const { weatherDescription, country, city } = useWeather();
-  const [dayRecommendations, setDayRecommendations] = useState<string | null>(
-    null
-  );
-
-  const handleFetch = async () => {
-    if (!weatherDescription || !city || !country) {
-      console.error("Description, city, and country are required.");
-      return;
-    }
-
-    try {
-      const client = new Client();
-      const request = new WeatherAIRequest({
-        description: weatherDescription,
-        city,
-        country,
-      });
-
-      const response = await client.getDayRecommendations(request);
-
-      if (response.result && response.result.content) {
-        setDayRecommendations(response.result.content);
-      }
-    } catch (error) {
-      handleApiError(error);
-    }
-  };
+  const { aiResponses, setDayRecommendations } = useWeather();
+  const { result: dayRecommendations, loading, fetchData } = useFetchAI((client, request) => client.getDayRecommendations(request), setDayRecommendations);
 
   return (
     <div>
-      <button onClick={handleFetch}>Get Day Recommendations</button>
-      {dayRecommendations && <p>{dayRecommendations}</p>}
+      <button onClick={fetchData} disabled={loading}>
+        {loading ? "Loading..." : "Get Day Recommendations"}
+      </button>
+      {aiResponses.dayRecommendations && <p>{aiResponses.dayRecommendations}</p>}
     </div>
   );
 };

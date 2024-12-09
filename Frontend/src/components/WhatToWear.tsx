@@ -1,40 +1,17 @@
-import React, { useState } from "react";
-import { Client, WeatherAIRequest } from "../api/generated-weather-data-api-client";
+import React from "react";
 import { useWeather } from "../context/WeatherContext";
-import { handleApiError } from "../api/errorHandlerUtils";
+import useFetchAI from "../hooks/useFetchAI/useFetchAI";
 
 const WhatToWear: React.FC = () => {
-  const { weatherDescription, country, city } = useWeather();
-  const [whatToWear, setWhatToWear] = useState<string | null>(null);
-
-  const handleFetch = async () => {
-    if (!weatherDescription || !city || !country) {
-      console.error("Description, city, and country are required.");
-      return;
-    }
-
-    try {
-      const client = new Client();
-      const request = new WeatherAIRequest({
-        description: weatherDescription,
-        city,
-        country,
-      });
-
-      const response = await client.getWhatToWear(request);
-
-      if (response.result && response.result.content) {
-        setWhatToWear(response.result.content);
-      }
-    } catch (error) {
-      handleApiError(error); 
-    }
-  };
+  const { aiResponses, setWhatToWear } = useWeather();
+  const { result: whatToWear, loading, fetchData } = useFetchAI((client, request) => client.getWhatToWear(request), setWhatToWear);
 
   return (
     <div>
-      <button onClick={handleFetch}>Get What to Wear</button>
-      {whatToWear && <p>{whatToWear}</p>}
+      <button onClick={fetchData} disabled={loading}>
+        {loading ? "Loading..." : "Get What to Wear"}
+      </button>
+      {aiResponses.whatToWear && <p>{aiResponses.whatToWear}</p>}
     </div>
   );
 };
