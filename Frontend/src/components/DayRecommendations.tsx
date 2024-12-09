@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import { Client, WeatherAIRequest } from "../api/generated-weather-data-api-client";
+import {
+  Client,
+  WeatherAIRequest,
+} from "../api/generated-weather-data-api-client";
 import { useWeather } from "../context/WeatherContext";
-import { useThrottle } from "../context/ThrottleService";
+import { handleApiError } from "../api/errorHandlerUtils";
 
 const DayRecommendations: React.FC = () => {
   const { weatherDescription, country, city } = useWeather();
-  const [dayRecommendations, setDayRecommendations] = useState<string | null>(null);
-  const { checkRateLimit, setRateLimit } = useThrottle();
+  const [dayRecommendations, setDayRecommendations] = useState<string | null>(
+    null
+  );
 
   const handleFetch = async () => {
-    if (!checkRateLimit()) return;
-
     if (!weatherDescription || !city || !country) {
       console.error("Description, city, and country are required.");
       return;
@@ -18,20 +20,25 @@ const DayRecommendations: React.FC = () => {
 
     try {
       const client = new Client();
-      const request = new WeatherAIRequest({ description: weatherDescription, city, country });
+      const request = new WeatherAIRequest({
+        description: weatherDescription,
+        city,
+        country,
+      });
+
       const response = await client.getDayRecommendations(request);
-      setDayRecommendations(response.result);
-      setRateLimit();
+
+      if (response.result && response.result.content) {
+        setDayRecommendations(response.result.content);
+      }
     } catch (error) {
-      console.error(error);
+      handleApiError(error);
     }
   };
 
   return (
     <div>
-      <button onClick={handleFetch}>
-        Get Day Recommendations
-      </button>
+      <button onClick={handleFetch}>Get Day Recommendations</button>
       {dayRecommendations && <p>{dayRecommendations}</p>}
     </div>
   );

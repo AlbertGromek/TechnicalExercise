@@ -129,7 +129,7 @@ export class Client {
      * @param body The weather AI request
      * @return The OK response
      */
-    getDayRecommendations(body: WeatherAIRequest): Promise<SwaggerResponse<string>> {
+    getDayRecommendations(body: WeatherAIRequest): Promise<SwaggerResponse<WeatherAIResponse>> {
         let url_ = this.baseUrl + "/ai/day-recommendations";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -149,23 +149,28 @@ export class Client {
         });
     }
 
-    protected processGetDayRecommendations(response: Response): Promise<SwaggerResponse<string>> {
+    protected processGetDayRecommendations(response: Response): Promise<SwaggerResponse<WeatherAIResponse>> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
+            result200 = WeatherAIResponse.fromJS(resultData200);
             return new SwaggerResponse(status, _headers, result200);
+            });
+        } else if (status === 429) {
+            return response.text().then((_responseText) => {
+            let result429: any = null;
+            let resultData429 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result429 = WeatherAIResponse.fromJS(resultData429);
+            return throwException("Rate limit exceeded", status, _responseText, _headers, result429);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result400 = resultData400 !== undefined ? resultData400 : <any>null;
-    
+            result400 = WeatherAIResponse.fromJS(resultData400);
             return throwException("Bad Request", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -173,7 +178,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<SwaggerResponse<string>>(new SwaggerResponse(status, _headers, null as any));
+        return Promise.resolve<SwaggerResponse<WeatherAIResponse>>(new SwaggerResponse(status, _headers, null as any));
     }
 }
 

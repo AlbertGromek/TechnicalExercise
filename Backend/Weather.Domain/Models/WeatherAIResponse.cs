@@ -2,14 +2,9 @@
 
 namespace Weather.Domain.Models
 {
-    public class WeatherAIResponse
+    public class WeatherAIResponse(string content)
     {
         [JsonPropertyName("content")]
-        public string Content { get; init; }
-
-        public WeatherAIResponse(string content)
-        {
-            Content = content;
-        }
+        public string Content { get; init; } = content;
     }
 }

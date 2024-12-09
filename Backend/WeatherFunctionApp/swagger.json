@@ -122,13 +122,19 @@
           "200": {
             "description": "The OK response",
             "schema": {
-              "type": "string"
+              "$ref": "#/definitions/weatherAIResponse"
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "schema": {
+              "$ref": "#/definitions/weatherAIResponse"
             }
           },
           "400": {
             "description": "Bad Request",
             "schema": {
-              "type": "string"
+              "$ref": "#/definitions/weatherAIResponse"
             }
           }
         }

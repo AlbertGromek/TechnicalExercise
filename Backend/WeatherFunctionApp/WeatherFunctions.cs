@@ -79,13 +79,7 @@ namespace Weather.FuncApp
             }
             catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.TooManyRequests)
             {
-                var retryAfter = ex.Data["Retry-After"]?.ToString();
-
-                var tooManyRequestsResponse = req.CreateResponse(HttpStatusCode.TooManyRequests);
-                var errorContent = $"Rate limit exceeded. Please retry later. Retry-After: {retryAfter}";
-                var errorResponse = new WeatherAIResponse(errorContent);
-                await tooManyRequestsResponse.WriteAsJsonAsync(errorResponse);
-                return tooManyRequestsResponse;
+                return await HandleTooManyRequestsAsync(req, ex);
             }
         }
 
@@ -93,10 +87,11 @@ namespace Weather.FuncApp
         [Function("GetDayRecommendations")]
         [OpenApiOperation(operationId: "GetDayRecommendations", tags: ["AI"])]
         [OpenApiRequestBody("application/json", typeof(WeatherAIRequest), Description = "The weather AI request", Required = true)]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(string), Description = "The OK response")]
-        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(string), Description = "Bad Request")]
-        public async Task<IActionResult> GetDayRecommendationsAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "ai/day-recommendations")] HttpRequestData req)
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "The OK response")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.TooManyRequests, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "Rate limit exceeded")]
+        [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "Bad Request")]
+        public async Task<HttpResponseData> GetDayRecommendationsAsync(
+     [HttpTrigger(AuthorizationLevel.Function, "post", Route = "ai/day-recommendations")] HttpRequestData req)
         {
             _logger.LogInformation("Processing AI day recommendations request.");
 
@@ -104,11 +99,39 @@ namespace Weather.FuncApp
 
             if (request == null || string.IsNullOrWhiteSpace(request.Description) || string.IsNullOrWhiteSpace(request.City) || string.IsNullOrWhiteSpace(request.Country))
             {
-                return new BadRequestObjectResult("Invalid request. Description, City, and Country are required.");
+                var badRequestResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+                var errorResponse = new WeatherAIResponse("Invalid request. Description, City, and Country are required.");
+                await badRequestResponse.WriteAsJsonAsync(errorResponse);
+                return badRequestResponse;
             }
 
-            var aiResponse = await _weatherAIService.GetDayRecommendationsAsync(request);
-            return new OkObjectResult(aiResponse);
+            try
+            {
+                var aiResponse = await _weatherAIService.GetDayRecommendationsAsync(request);
+
+                var okResponse = req.CreateResponse(HttpStatusCode.OK);
+                var successResponse = new WeatherAIResponse(aiResponse);
+                await okResponse.WriteAsJsonAsync(successResponse);
+                return okResponse;
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.TooManyRequests)
+            {
+                return await HandleTooManyRequestsAsync(req, ex);
+            }
+        }
+
+        private static async Task<HttpResponseData> HandleTooManyRequestsAsync(HttpRequestData req, HttpRequestException ex)
+        {
+            var retryAfter = ex.Data["Retry-After"]?.ToString();
+
+            var tooManyRequestsResponse = req.CreateResponse(HttpStatusCode.TooManyRequests);
+            var errorContent = retryAfter != null
+                ? $"Rate limit exceeded. Please retry later. Retry-After: {retryAfter}"
+                : "Rate limit exceeded. Please retry later.";
+            var errorResponse = new WeatherAIResponse(errorContent);
+
+            await tooManyRequestsResponse.WriteAsJsonAsync(errorResponse);
+            return tooManyRequestsResponse;
         }
     }
 }
