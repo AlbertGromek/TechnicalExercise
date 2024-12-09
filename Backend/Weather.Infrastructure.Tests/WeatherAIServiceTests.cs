@@ -3,14 +3,8 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
 using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Weather.Application.Configurations;
-using Weather.Application.Interfaces;
 using Weather.Domain.Models;
-using Weather.Infrastructure;
-using Xunit;
 
 namespace Weather.Infrastructure.Tests
 {

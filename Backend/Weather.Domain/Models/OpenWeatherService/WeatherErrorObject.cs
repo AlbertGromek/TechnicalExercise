@@ -1,4 +1,4 @@
-﻿namespace Weather.Domain.Models
+﻿namespace Weather.Domain.Models.OpenWeatherService
 {
     public class WeatherErrorObject
     {

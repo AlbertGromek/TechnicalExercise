@@ -3,14 +3,21 @@ using Microsoft.Extensions.Options;
 using System.Text.Json;
 using Weather.Application.Configurations;
 using Weather.Application.Interfaces;
-using Weather.Domain.Models;
+using Weather.Domain.Models.OpenWeatherService;
 
 namespace Weather.Infrastructure
 {
-    public class OpenWeatherService(IHttpClientFactory httpClientFactory, IOptions<OpenWeatherServiceOptions> options) : IWeatherService
+    public class OpenWeatherService : IWeatherService
     {
-        private readonly OpenWeatherServiceOptions _options = options.Value;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly OpenWeatherServiceOptions _options;
         private readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
+
+        public OpenWeatherService(IHttpClientFactory httpClientFactory, IOptions<OpenWeatherServiceOptions> options)
+        {
+            _httpClientFactory = httpClientFactory;
+            _options = options.Value;
+        }
 
         public async Task<string> GetWeatherDataAsync(string city, string countryCode)
         {
@@ -29,11 +36,14 @@ namespace Weather.Infrastructure
 
             var requestUri = QueryHelpers.AddQueryString(_options.WeatherForecastURL, queryParams);
 
-            var client = httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient();
 
             using var response = await client.GetAsync(requestUri);
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"Request to OpenWeatherMap API failed with status code {response.StatusCode}");
+            }
 
             var content = await response.Content.ReadAsStringAsync();
             var weatherForecast = JsonSerializer.Deserialize<WeatherForecast>(content, _jsonSerializerOptions);
