@@ -58,19 +58,19 @@ namespace Weather.Infrastructure.Services
             {
                 Messages =
                 [
-            new AzureAIMessage
-            {
-                Role = "system",
-                Content = new[]
-                {
-                    new AzureAIContent
+                    new AzureAIMessage
                     {
-                        Type = "text",
-                        Text = messageContent
+                        Role = "system",
+                        Content =
+                        [
+                            new AzureAIContent
+                            {
+                                Type = "text",
+                                Text = messageContent
+                            }
+                        ]
                     }
-                }
-            }
-        ],
+                ],
                 Temperature = 0.7,
                 TopP = 0.95,
                 MaxTokens = 800

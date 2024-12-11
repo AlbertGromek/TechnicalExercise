@@ -54,16 +54,13 @@ namespace Weather.FuncApp.Functions
             }
         }
 
-
-
         [Function("GetWhatToWear")]
         [OpenApiOperation(operationId: "GetWhatToWear", tags: ["AI"])]
         [OpenApiRequestBody("application/json", typeof(WeatherAIRequest), Description = "The weather AI request", Required = true)]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "The OK response")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.TooManyRequests, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "Rate limit exceeded")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "Bad Request")]
-        public async Task<HttpResponseData> GetWhatToWearAsync(
-     [HttpTrigger(AuthorizationLevel.Function, "post", Route = "ai/what-to-wear")] HttpRequestData req)
+        public async Task<HttpResponseData> GetWhatToWearAsync([HttpTrigger(AuthorizationLevel.Function, "post", Route = "ai/what-to-wear")] HttpRequestData req)
         {
             _logger.LogInformation("Processing AI what to wear request.");
 
@@ -99,8 +96,7 @@ namespace Weather.FuncApp.Functions
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "The OK response")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.TooManyRequests, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "Rate limit exceeded")]
         [OpenApiResponseWithBody(statusCode: HttpStatusCode.BadRequest, contentType: "application/json", bodyType: typeof(WeatherAIResponse), Description = "Bad Request")]
-        public async Task<HttpResponseData> GetDayRecommendationsAsync(
-     [HttpTrigger(AuthorizationLevel.Function, "post", Route = "ai/day-recommendations")] HttpRequestData req)
+        public async Task<HttpResponseData> GetDayRecommendationsAsync([HttpTrigger(AuthorizationLevel.Function, "post", Route = "ai/day-recommendations")] HttpRequestData req)
         {
             _logger.LogInformation("Processing AI day recommendations request.");
 

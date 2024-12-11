@@ -7,17 +7,10 @@ using Weather.Domain.Models.OpenWeatherService;
 
 namespace Weather.Infrastructure.Services
 {
-    public class OpenWeatherService : IWeatherService
+    public class OpenWeatherService(IHttpClientFactory httpClientFactory, IOptions<OpenWeatherServiceOptions> options) : IWeatherService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly OpenWeatherServiceOptions _options;
+        private readonly OpenWeatherServiceOptions _options = options.Value;
         private readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
-
-        public OpenWeatherService(IHttpClientFactory httpClientFactory, IOptions<OpenWeatherServiceOptions> options)
-        {
-            _httpClientFactory = httpClientFactory;
-            _options = options.Value;
-        }
 
         public async Task<string> GetWeatherDataAsync(string city, string countryCode)
         {
@@ -36,11 +29,11 @@ namespace Weather.Infrastructure.Services
 
             var requestUri = QueryHelpers.AddQueryString(_options.WeatherForecastURL, queryParams);
 
-            var client = _httpClientFactory.CreateClient();
+            var client = httpClientFactory.CreateClient();
 
             using var response = await client.GetAsync(requestUri);
 
-            if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 throw new HttpRequestException($"City/Country combination was not found", null, System.Net.HttpStatusCode.NotFound);
 
