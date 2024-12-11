@@ -59,16 +59,16 @@ namespace Weather.Infrastructure.Tests
         }
 
         [Theory]
-        [InlineData(60, "Rate limit exceeded. Please try again later.")]
-        [InlineData(30, "Rate limit exceeded. Please try again later.")]
-        [InlineData(10, "Rate limit exceeded. Please try again later.")]
-        public async Task GetWhatToWearAsync_ShouldThrowHttpRequestException_WhenRateLimitExceeded(int retryAfterSeconds, string responseContent)
+        [InlineData(60)]
+        [InlineData(30)]
+        [InlineData(10)]
+        public async Task GetWhatToWearAsync_ShouldThrowHttpRequestException_WhenRateLimitExceeded(int retryAfterSeconds)
         {
             // Arrange
             var request = new WeatherAIRequest { Description = "Sunny", City = "Melbourne", Country = "AU" };
             var responseMessage = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
             {
-                Content = new StringContent(responseContent),
+                Content = new StringContent($"Rate limit exceeded. Retry after {retryAfterSeconds} seconds."),
                 Headers = { { "Retry-After", retryAfterSeconds.ToString() } }
             };
 
@@ -87,7 +87,7 @@ namespace Weather.Infrastructure.Tests
             // Act & Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => _weatherAIService.GetWhatToWearAsync(request));
             Assert.Equal(HttpStatusCode.TooManyRequests, exception.StatusCode);
-            Assert.Contains($"Rate limit exceeded. Retry after {retryAfterSeconds} seconds.", exception.Message);
+            Assert.Equal($"Rate limit exceeded. Retry after {retryAfterSeconds} seconds.", exception.Message);
         }
 
         [Fact]
