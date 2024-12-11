@@ -11,7 +11,7 @@ using Weather.Domain.Models.AzureAI;
 
 namespace Weather.Infrastructure.Services
 {
-    public class WeatherAIService(IHttpClientFactory httpClientFactory, IOptions<WeatherAIServiceOptions> options, ILogger<WeatherAIService> logger) : IWeatherAIService
+    public class AzureWeatherAIService(IHttpClientFactory httpClientFactory, IOptions<WeatherAIServiceOptions> options, ILogger<AzureWeatherAIService> logger) : IWeatherAIService
     {
         private readonly WeatherAIServiceOptions _options = options.Value;
         private static readonly JsonSerializerOptions JsonOptions = new()
@@ -52,28 +52,28 @@ namespace Weather.Infrastructure.Services
             return aiResponse?.Choices.FirstOrDefault()?.Message.Content ?? "No response";
         }
 
-        private static object CreatePayload(string messageContent)
+        private static AzureAIPayload CreatePayload(string messageContent)
         {
-            return new
+            return new AzureAIPayload
             {
-                messages = new[]
+                Messages =
+                [
+            new AzureAIMessage
+            {
+                Role = "system",
+                Content = new[]
                 {
-                    new
+                    new AzureAIContent
                     {
-                        role = "system",
-                        content = new[]
-                        {
-                            new
-                            {
-                                type = "text",
-                                text = messageContent
-                            }
-                        }
+                        Type = "text",
+                        Text = messageContent
                     }
-                },
-                temperature = 0.7,
-                top_p = 0.95,
-                max_tokens = 800
+                }
+            }
+        ],
+                Temperature = 0.7,
+                TopP = 0.95,
+                MaxTokens = 800
             };
         }
 

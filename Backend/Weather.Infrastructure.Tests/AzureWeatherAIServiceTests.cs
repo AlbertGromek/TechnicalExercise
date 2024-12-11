@@ -9,24 +9,24 @@ using Weather.Infrastructure.Services;
 
 namespace Weather.Infrastructure.Tests
 {
-    public class WeatherAIServiceTests
+    public class AzureWeatherAIServiceTests
     {
         private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
-        private readonly Mock<ILogger<WeatherAIService>> _loggerMock;
+        private readonly Mock<ILogger<AzureWeatherAIService>> _loggerMock;
         private readonly WeatherAIServiceOptions _options;
-        private readonly WeatherAIService _weatherAIService;
+        private readonly AzureWeatherAIService _weatherAIService;
 
-        public WeatherAIServiceTests()
+        public AzureWeatherAIServiceTests()
         {
             _httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            _loggerMock = new Mock<ILogger<WeatherAIService>>();
+            _loggerMock = new Mock<ILogger<AzureWeatherAIService>>();
             _options = new WeatherAIServiceOptions
             {
                 ApiKey = "test-api-key",
                 Endpoint = "https://test-endpoint"
             };
 
-            _weatherAIService = new WeatherAIService(_httpClientFactoryMock.Object, Options.Create(_options), _loggerMock.Object);
+            _weatherAIService = new AzureWeatherAIService(_httpClientFactoryMock.Object, Options.Create(_options), _loggerMock.Object);
         }
 
         [Fact]
